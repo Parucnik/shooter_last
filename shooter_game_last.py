@@ -3,8 +3,8 @@ from random import randint
 from time import time as get_time
 
 
-SCREEN_SIZE = (700, 500)
-SPRITE_SIZE = 65
+SCREEN_SIZE = (1000, 800)
+SPRITE_SIZE = 70
 
 def show_label(text, x, y, font_name='Arial', color=(255, 255, 255)):
     font.init()
@@ -15,7 +15,7 @@ def show_label(text, x, y, font_name='Arial', color=(255, 255, 255)):
 class Live:
     def __init__(self, x,y, image_name, lives):
         self.lives = lives
-        self.image = transform.scale(image.load(image_name), (30, 30))
+        self.image = transform.scale(image.load(image_name), (SPRITE_SIZE//2, SPRITE_SIZE//2))
         self.x = x
         self.y = y
 
@@ -23,7 +23,7 @@ class Live:
         for i in range(self.lives):
             window.blit(self.image, (self.x-i*40, self.y))
 
-lives = Live(650, 20, 'rocket.png', 5)
+lives = Live(SCREEN_SIZE[0] - SPRITE_SIZE//2, 20, 'rocket.png', 5)
 
 class GameSprite(sprite.Sprite):
     def __init__(self, image_name, speed, x, y):
@@ -64,9 +64,9 @@ class Player(GameSprite):
 class Enemy(GameSprite):
     def update(self):
         self.rect.y += self.speed
-        if self.rect.y >= 500:
+        if self.rect.y >= SCREEN_SIZE[1]:
             self.rect.y = 0
-            self.rect.x = randint(0, 635)
+            self.rect.x = randint(0, SCREEN_SIZE[0] - SPRITE_SIZE)
             missed_counter.counter += 1
             missed_counter.set_text(24,(255,255,255))
         self.reset()
@@ -74,22 +74,22 @@ class Enemy(GameSprite):
 class Asteroid(GameSprite):
     def update(self):
         self.rect.y += self.speed
-        if self.rect.y >= 500:
+        if self.rect.y >= SCREEN_SIZE[1]:
             self.rect.y = 0
-            self.rect.x = randint(0, 635)
+            self.rect.x = randint(0, SCREEN_SIZE[0] - SPRITE_SIZE)
         self.reset()
 
 class Heart(GameSprite):
     def update(self):
         self.rect.y += self.speed
-        if self.rect.y < 500:
+        if self.rect.y < SCREEN_SIZE[1]:
             self.reset()
         else:
             if randint(1, 100) == 1:
                 self.rect.y = 0
-                self.rect.x = randint(1,635)
+                self.rect.x = randint(1, SCREEN_SIZE[0] - SPRITE_SIZE)
                 
-heart = Heart('rocket.png', 2, randint(1,635), 600)
+heart = Heart('rocket.png', 2, randint(1,SCREEN_SIZE[0] - SPRITE_SIZE), SCREEN_SIZE[1]*2)
 
 class Bullet(GameSprite):
     def __init__(self, image_name, speed, x, y, direction=0):
@@ -128,7 +128,7 @@ class Counter:
 
 
 
-player = Player('rocket.png', 7, 10, 435)
+player = Player('rocket.png', 7, 10, SCREEN_SIZE[1] - SPRITE_SIZE - 5)
 player.last_shoot = 0
 
 ufos = sprite.Group()
@@ -161,7 +161,7 @@ end = get_time()+4
 while True:
     clock.tick(FPS)
     window.blit(pic, (0,0))
-    show_label(str(int(end - get_time())), 340, 250)
+    show_label(str(int(end - get_time())), SCREEN_SIZE[0]//2 - 20, SCREEN_SIZE[1]//2 - 20)
     
     display.update()
     if get_time() > end:
@@ -182,10 +182,10 @@ while game:
         heart.update()
         if sprite.collide_rect(player, heart):
             lives.lives += 1
-            heart.rect.y = 600
+            heart.rect.y = SCREEN_SIZE[1]*2
         lives.update()
         if chetchik2.counter >= 50:
-            show_label('Победа', 270, 200)
+            show_label('Победа', SCREEN_SIZE[0]//2-40, SCREEN_SIZE[1]//2-20)
             finish = True
         if missed_counter.counter >= 3:
             lives.lives -= 1
@@ -198,7 +198,7 @@ while game:
                 lives.lives -= 1
             
         if lives.lives <= 0:    
-            show_label('Поражение...', 250, 200)
+            show_label('Поражение...', SCREEN_SIZE[0]//2-40, SCREEN_SIZE[1]//2-20)
             finish = True
         display.update()    
         
